@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "48d27442-f3e3-429d-93d3-13fb4a859b1e",
+    "clienteId": "cliente-123",
+    "numero": "0001234-56.2025.8.26.0000",
+    "tipo": "cível",
+    "status": "em andamento",
+    "historico": []
+  }
+]
