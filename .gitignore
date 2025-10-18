@@ -1,6 +1,23 @@
+# Node
 node_modules/
-npm-debug.log
-yarn-error.log
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
 .env
-.DS_Store
+
+# Logs
 *.log
+logs/
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Data (opcional: mantenha data/ se quiser versionar exemplos)
+# /data/
