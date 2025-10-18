@@ -83,10 +83,39 @@ const deleteCliente = async (id) => {
   }
 };
 
+const addAlerta = async (id, alertaData) => {
+  try {
+    const clientes = await getAllClientes();
+    const index = clientes.findIndex(c => c.id === parseInt(id));
+    
+    if (index === -1) {
+      return null;
+    }
+    
+    if (!clientes[index].alertas) {
+      clientes[index].alertas = [];
+    }
+    
+    const novoAlerta = {
+      ...alertaData,
+      data: new Date().toISOString()
+    };
+    
+    clientes[index].alertas.push(novoAlerta);
+    
+    await fs.writeJson(clientesFilePath, clientes, { spaces: 2 });
+    return clientes[index];
+  } catch (error) {
+    console.error('Erro ao adicionar alerta:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getAllClientes,
   createCliente,
   getClienteById,
   updateCliente,
-  deleteCliente
+  deleteCliente,
+  addAlerta
 };

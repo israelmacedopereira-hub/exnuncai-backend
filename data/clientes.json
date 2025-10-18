@@ -6,7 +6,15 @@
     "telefone": "(11) 98765-4321",
     "origem": "Website",
     "interesse": "Consultoria",
-    "status": "Novo"
+    "status": "Novo",
+    "alertas": [
+      {
+        "tipo": "follow-up",
+        "mensagem": "Entrar em contato amanhã",
+        "prioridade": "alta",
+        "data": "2025-10-18T20:29:31.029Z"
+      }
+    ]
   },
   {
     "id": 2,
@@ -34,5 +42,16 @@
     "origem": "Email Marketing",
     "interesse": "Automação",
     "status": "Novo"
+  },
+  {
+    "id": 5,
+    "nome": "Teste Novo",
+    "email": "teste@exemplo.com",
+    "telefone": "(11) 99999-9999",
+    "origem": "Website",
+    "interesse": "Consultoria",
+    "status": "Novo",
+    "historico": [],
+    "alertas": []
   }
 ]

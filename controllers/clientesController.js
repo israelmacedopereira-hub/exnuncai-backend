@@ -31,7 +31,9 @@ const createCliente = async (req, res) => {
       telefone,
       origem,
       interesse,
-      status
+      status,
+      historico: [],
+      alertas: []
     });
     
     res.status(201).json({
@@ -74,10 +76,41 @@ const deleteCliente = async (req, res) => {
   }
 };
 
+const getHistorico = async (req, res) => {
+  try {
+    const cliente = await clientesModel.getClienteById(req.params.id);
+    if (!cliente) {
+      return res.status(404).json({ erro: 'Cliente não encontrado' });
+    }
+    res.json(cliente.historico || []);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar histórico' });
+  }
+};
+
+const createAlerta = async (req, res) => {
+  try {
+    const clienteAtualizado = await clientesModel.addAlerta(req.params.id, req.body);
+    
+    if (!clienteAtualizado) {
+      return res.status(404).json({ erro: 'Cliente não encontrado' });
+    }
+    
+    res.json({
+      mensagem: 'Alerta criado com sucesso!',
+      alertas: clienteAtualizado.alertas
+    });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao criar alerta' });
+  }
+};
+
 module.exports = {
   getClientes,
   getClienteById,
   createCliente,
   updateCliente,
-  deleteCliente
+  deleteCliente,
+  getHistorico,
+  createAlerta
 };
