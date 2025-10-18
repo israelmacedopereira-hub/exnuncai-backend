@@ -1,0 +1,214 @@
+# Cria estrutura de diretórios
+mkdir -p routes controllers models data
+
+# Cria arquivos
+touch index.js \
+      routes/clientes.js \
+      routes/leads.js \
+      controllers/clientesController.js \
+      controllers/leadsController.js \
+      models/clientesModel.js \
+      models/leadsModel.js \
+      data/clientes.json \
+      data/leads.json
+
+# Instala dependências
+npm init -y
+npm install express cors fs-extra
+
+# Preenche index.js
+cat << 'EOF' > index.js
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const PORT = 3001;
+
+app.use(cors());
+app.use(express.json());
+
+const clientesRoutes = require('./routes/clientes');
+const leadsRoutes = require('./routes/leads');
+
+app.use('/clientes', clientesRoutes);
+app.use('/leads', leadsRoutes);
+
+app.get('/', (req, res) => {
+  res.send('API ExnuncAi rodando!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
+EOF
+
+# Preenche routes/clientes.js
+cat << 'EOF' > routes/clientes.js
+const express = require('express');
+const router = express.Router();
+const {
+  listarClientes,
+  buscarClientePorId,
+  buscarClientePorNome,
+  cadastrarCliente,
+  atualizarCliente,
+  excluirCliente,
+  verHistorico,
+  criarAlerta
+} = require('../controllers/clientesController');
+
+router.get('/', listarClientes);
+router.get('/:id', buscarClientePorId);
+router.get('/nome/:nome', buscarClientePorNome);
+router.post('/', cadastrarCliente);
+router.put('/:id', atualizarCliente);
+router.delete('/:id', excluirCliente);
+router.get('/:id/historico', verHistorico);
+router.post('/:id/alerta', criarAlerta);
+
+module.exports = router;
+EOF
+
+# Preenche routes/leads.js
+cat << 'EOF' > routes/leads.js
+const express = require('express');
+const router = express.Router();
+const {
+  listarLeads,
+  buscarLeadPorId,
+  cadastrarLead,
+  atualizarLead,
+  excluirLead,
+  converterLead,
+  visualizarFunil,
+  gerarAbordagem
+} = require('../controllers/leadsController');
+
+router.get('/', listarLeads);
+router.get('/:id', buscarLeadPorId);
+router.post('/', cadastrarLead);
+router.put('/:id', atualizarLead);
+router.delete('/:id', excluirLead);
+router.post('/:id/converter', converterLead);
+router.get('/funil', visualizarFunil);
+router.post('/:id/abordagem', gerarAbordagem);
+
+module.exports = router;
+EOF
+
+# Preenche controllers/clientesController.js
+cat << 'EOF' > controllers/clientesController.js
+const { clientes } = require('../models/clientesModel');
+
+exports.listarClientes = (req, res) => {
+  res.json(clientes);
+};
+
+exports.buscarClientePorId = (req, res) => {
+  const cliente = clientes.find(c => c.id === parseInt(req.params.id));
+  cliente ? res.json(cliente) : res.status(404).json({ mensagem: 'Cliente não encontrado' });
+};
+
+exports.buscarClientePorNome = (req, res) => {
+  const cliente = clientes.find(c => c.nome.toLowerCase() === req.params.nome.toLowerCase());
+  cliente ? res.json(cliente) : res.status(404).json({ mensagem: 'Cliente não encontrado' });
+};
+
+exports.cadastrarCliente = (req, res) => {
+  const novo = { id: clientes.length + 1, ...req.body, historico: [], alertas: [] };
+  clientes.push(novo);
+  res.status(201).json({ mensagem: 'Cliente cadastrado com sucesso!', cliente: novo });
+};
+
+exports.atualizarCliente = (req, res) => {
+  const index = clientes.findIndex(c => c.id === parseInt(req.params.id));
+  if (index === -1) return res.status(404).json({ mensagem: 'Cliente não encontrado' });
+  clientes[index] = { ...clientes[index], ...req.body };
+  res.json({ mensagem: 'Cliente atualizado!', cliente: clientes[index] });
+};
+
+exports.excluirCliente = (req, res) => {
+  const index = clientes.findIndex(c => c.id === parseInt(req.params.id));
+  if (index === -1) return res.status(404).json({ mensagem: 'Cliente não encontrado' });
+  clientes.splice(index, 1);
+  res.json({ mensagem: 'Cliente excluído com sucesso' });
+};
+
+exports.verHistorico = (req, res) => {
+  const cliente = clientes.find(c => c.id === parseInt(req.params.id));
+  cliente ? res.json(cliente.historico || []) : res.status(404).json({ mensagem: 'Cliente não encontrado' });
+};
+
+exports.criarAlerta = (req, res) => {
+  const cliente = clientes.find(c => c.id === parseInt(req.params.id));
+  if (!cliente) return res.status(404).json({ mensagem: 'Cliente não encontrado' });
+  cliente.alertas.push(req.body);
+  res.json({ mensagem: 'Alerta criado!', alertas: cliente.alertas });
+};
+EOF
+
+# Preenche controllers/leadsController.js
+cat << 'EOF' > controllers/leadsController.js
+const { leads } = require('../models/leadsModel');
+
+exports.listarLeads = (req, res) => {
+  res.json(leads);
+};
+
+exports.buscarLeadPorId = (req, res) => {
+  const lead = leads.find(l => l.id === parseInt(req.params.id));
+  lead ? res.json(lead) : res.status(404).json({ mensagem: 'Lead não encontrado' });
+};
+
+exports.cadastrarLead = (req, res) => {
+  const novo = { id: leads.length + 1, ...req.body, status: 'captado' };
+  leads.push(novo);
+  res.status(201).json({ mensagem: 'Lead registrado com sucesso!', lead: novo });
+};
+
+exports.atualizarLead = (req, res) => {
+  const index = leads.findIndex(l => l.id === parseInt(req.params.id));
+  if (index === -1) return res.status(404).json({ mensagem: 'Lead não encontrado' });
+  leads[index] = { ...leads[index], ...req.body };
+  res.json({ mensagem: 'Lead atualizado!', lead: leads[index] });
+};
+
+exports.excluirLead = (req, res) => {
+  const index = leads.findIndex(l => l.id === parseInt(req.params.id));
+  if (index === -1) return res.status(404).json({ mensagem: 'Lead não encontrado' });
+  leads.splice(index, 1);
+  res.json({ mensagem: 'Lead excluído com sucesso' });
+};
+
+exports.converterLead = (req, res) => {
+  const lead = leads.find(l => l.id === parseInt(req.params.id));
+  if (!lead) return res.status(404).json({ mensagem: 'Lead não encontrado' });
+  lead.status = 'convertido';
+  res.json({ mensagem: 'Lead convertido em cliente!', lead });
+};
+
+exports.visualizarFunil = (req, res) => {
+  const funil = {
+    captado: leads.filter(l => l.status === 'captado'),
+    qualificado: leads.filter(l => l.status === 'qualificado'),
+    convertido: leads.filter(l => l.status === 'convertido')
+  };
+  res.json(funil);
+};
+
+exports.gerarAbordagem = (req, res) => {
+  const lead = leads.find(l => l.id === parseInt(req.params.id));
+  if (!lead) return res.status(404).json({ mensagem: 'Lead não encontrado' });
+  const sugestao = `Sugestão: abordagem consultiva para ${lead.nome}, com foco em ${lead.interesse}.`;
+  res.json({ mensagem: 'Abordagem sugerida', sugestao });
+};
+EOF
+
+# Preenche models/clientesModel.js
+echo "exports.clientes = [];" > models/clientesModel.js
+
+# Preenche models/leadsModel.js
+echo "exports.leads = [];" > models/leadsModel.js
+
+# Inicializa arquivos de dados
+echo "[]" > data/clientes.json
+echo "[]" > data/leads.json
