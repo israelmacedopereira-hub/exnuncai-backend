@@ -25,5 +25,14 @@
     "origem": "Redes Sociais",
     "interesse": "Desenvolvimento",
     "status": "Concluído"
+  },
+  {
+    "id": 4,
+    "nome": "Ana Costa",
+    "email": "ana@exemplo.com",
+    "telefone": "(41) 91234-5678",
+    "origem": "Email Marketing",
+    "interesse": "Automação",
+    "status": "Novo"
   }
 ]
