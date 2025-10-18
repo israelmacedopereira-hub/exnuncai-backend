@@ -1,0 +1,18 @@
+[
+  {
+    "id": "e75f37a3-e84d-4972-a79d-d77f593a74ad",
+    "clienteId": "cliente-123",
+    "numero": "2025.000123-4",
+    "tipo": "Cível",
+    "status": "Em andamento",
+    "historico": []
+  },
+  {
+    "id": "30897e88-1ae7-4ed8-aeaf-be5baeaddc0a",
+    "clienteId": "cliente-123",
+    "numero": "2025.000123-4",
+    "tipo": "Cível",
+    "status": "Em andamento",
+    "historico": []
+  }
+]
