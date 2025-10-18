@@ -12,7 +12,6 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "express-validator": "^7.2.1",
     "fs-extra": "^11.3.2",
     "joi": "^17.13.3"
   },

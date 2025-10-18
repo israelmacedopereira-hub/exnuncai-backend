@@ -1,33 +1,28 @@
 const express = require('express');
-const { body, param } = require('express-validator');
 const router = express.Router();
 const ctrl = require('../controllers/processosController');
+const validators = require('../validators/processoValidator');
 
-const createValidators = [
-  body('clienteId').trim().notEmpty().withMessage('clienteId é obrigatório'),
-  body('numero').trim().notEmpty().withMessage('numero é obrigatório'),
-  body('tipo').trim().notEmpty().withMessage('tipo é obrigatório'),
-  body('status').trim().notEmpty().withMessage('status é obrigatório'),
-  body('historico').optional().isArray().withMessage('historico deve ser um array')
-];
+// Middleware simples para checar id param
+function requireIdParam(req, res, next) {
+  if (!req.params || !req.params.id || String(req.params.id).trim() === '') {
+    return res.status(400).json({ error: 'Parâmetro id é obrigatório' });
+  }
+  next();
+}
 
-const idParam = [
-  param('id').trim().notEmpty().withMessage('id é obrigatório')
-];
+/**
+ * POST   /processos
+ * GET    /processos
+ * GET    /processos/:id
+ * PUT    /processos/:id
+ * DELETE /processos/:id
+ */
 
-const updateValidators = [
-  param('id').trim().notEmpty().withMessage('id é obrigatório'),
-  body('clienteId').optional().trim(),
-  body('numero').optional().trim(),
-  body('tipo').optional().trim(),
-  body('status').optional().trim(),
-  body('historico').optional().isArray().withMessage('historico deve ser um array')
-];
-
-router.post('/', createValidators, ctrl.createProcesso);
+router.post('/', validators.validateCreate, ctrl.createProcesso);
 router.get('/', ctrl.listProcessos);
-router.get('/:id', idParam, ctrl.getProcesso);
-router.put('/:id', updateValidators, ctrl.updateProcesso);
-router.delete('/:id', idParam, ctrl.deleteProcesso);
+router.get('/:id', requireIdParam, ctrl.getProcesso);
+router.put('/:id', requireIdParam, validators.validateUpdate, ctrl.updateProcesso);
+router.delete('/:id', requireIdParam, ctrl.deleteProcesso);
 
 module.exports = router;
