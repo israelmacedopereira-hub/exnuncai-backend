@@ -1,71 +1,102 @@
 const express = require('express');
-const cors = require('cors');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.use(cors());
 app.use(express.json());
 
-let clientes = [
-  {
-    id: 1,
-    nome: 'João Silva',
-    email: 'joao@exemplo.com',
-    telefone: '(11) 98765-4321',
-    origem: 'Website',
-    interesse: 'Consultoria',
-    status: 'Novo'
-  },
-  {
-    id: 2,
-    nome: 'Maria Santos',
-    email: 'maria@exemplo.com',
-    telefone: '(21) 99876-5432',
-    origem: 'Indicação',
-    interesse: 'Treinamento',
-    status: 'Em andamento'
-  },
-  {
-    id: 3,
-    nome: 'Pedro Oliveira',
-    email: 'pedro@exemplo.com',
-    telefone: '(31) 97654-3210',
-    origem: 'Redes Sociais',
-    interesse: 'Desenvolvimento',
-    status: 'Concluído'
-  }
-];
+// Dados simulados
+const clientes = [];
+const leads = [];
+const leadsRed = [];
+const leadsGreen = [];
+const atendimentos = [];
 
+// Rota de teste
 app.get('/', (req, res) => {
   res.send('ExnuncAi está rodando!');
 });
 
+// CLIENTES
+
+// POST /clientes - Cadastra cliente
+app.post('/clientes', (req, res) => {
+  const { nome, idade, telefone, origem, interesse } = req.body;
+  const novoCliente = { nome, idade, telefone, origem, interesse };
+  clientes.push(novoCliente);
+  res.status(201).json({ mensagem: 'Cliente cadastrado com sucesso!', cliente: novoCliente });
+});
+
+// GET /clientes - Lista todos os clientes
 app.get('/clientes', (req, res) => {
   res.json(clientes);
 });
 
-app.post('/clientes', (req, res) => {
-  const { nome, email, telefone, origem, interesse, status } = req.body;
-  
-  const novoCliente = {
-    id: clientes.length + 1,
-    nome,
-    email,
-    telefone,
-    origem,
-    interesse,
-    status
-  };
-  
-  clientes.push(novoCliente);
-  
-  res.status(201).json({
-    mensagem: 'Cliente cadastrado com sucesso!',
-    cliente: novoCliente
-  });
+// GET /clientes/:nome - Busca cliente por nome
+app.get('/clientes/:nome', (req, res) => {
+  const nomeBuscado = req.params.nome.toLowerCase();
+  const clienteEncontrado = clientes.find(c => c.nome.toLowerCase() === nomeBuscado);
+  if (clienteEncontrado) {
+    res.json(clienteEncontrado);
+  } else {
+    res.status(404).json({ mensagem: 'Cliente não encontrado' });
+  }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor ExnuncAi rodando na porta ${PORT}`);
+// LEADS
+
+// POST /leads - Cadastra lead
+app.post('/leads', (req, res) => {
+  const lead = req.body;
+  leads.push(lead);
+  if (lead.origem === 'vermelho') {
+    leadsRed.push(lead);
+  } else {
+    leadsGreen.push(lead);
+  }
+  res.status(201).json({ mensagem: 'Lead registrado com sucesso!', lead });
+});
+
+// GET /leads - Lista todos os leads
+app.get('/leads', (req, res) => {
+  res.json(leads);
+});
+
+// GET /leads/vermelhos - Lista leads vermelhos
+app.get('/leads/vermelhos', (req, res) => {
+  res.json(leadsRed);
+});
+
+// GET /leads/verdes - Lista leads verdes
+app.get('/leads/verdes', (req, res) => {
+  res.json(leadsGreen);
+});
+
+// ATENDIMENTOS
+
+// POST /atendimentos - Registra atendimento
+app.post('/atendimentos', (req, res) => {
+  const atendimento = req.body;
+  atendimentos.push(atendimento);
+  res.status(201).json({ mensagem: 'Atendimento registrado!', atendimento });
+});
+
+// GET /atendimentos - Lista todos os atendimentos
+app.get('/atendimentos', (req, res) => {
+  res.json(atendimentos);
+});
+
+// GET /atendimentos/:cliente - Lista atendimentos por cliente
+app.get('/atendimentos/:cliente', (req, res) => {
+  const clienteNome = req.params.cliente.toLowerCase();
+  const historico = atendimentos.filter(a => a.cliente.toLowerCase() === clienteNome);
+  if (historico.length > 0) {
+    res.json(historico);
+  } else {
+    res.status(404).json({ mensagem: 'Nenhum atendimento encontrado para este cliente' });
+  }
+});
+
+// INICIAR SERVIDOR
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor do ExnuncAi rodando na porta ${PORT}`);
 });
