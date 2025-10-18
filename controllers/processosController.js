@@ -42,6 +42,9 @@ async function updateProcesso(req, res) {
 }
 
 async function deleteProcesso(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
   try {
     const { id } = req.params;
     const removed = await model.deleteProcesso(id);
@@ -54,6 +57,9 @@ async function deleteProcesso(req, res) {
 }
 
 async function getProcesso(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
   try {
     const { id } = req.params;
     const processo = await model.getProcessoById(id);

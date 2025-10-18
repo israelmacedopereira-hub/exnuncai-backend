@@ -6,7 +6,7 @@ const DATA_PATH = path.join(__dirname, '..', 'data', 'processos.json');
 
 async function readData() {
   try {
-    return (await fs.readJson(DATA_PATH));
+    return await fs.readJson(DATA_PATH);
   } catch (err) {
     if (err.code === 'ENOENT') return [];
     throw err;

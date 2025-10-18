@@ -1,26 +1,18 @@
 [
   {
-    "id": "48d27442-f3e3-429d-93d3-13fb4a859b1e",
+    "id": "e75f37a3-e84d-4972-a79d-d77f593a74ad",
     "clienteId": "cliente-123",
-    "numero": "0001234-56.2025.8.26.0000",
-    "tipo": "cível",
-    "status": "em andamento",
+    "numero": "2025.000123-4",
+    "tipo": "Cível",
+    "status": "Em andamento",
     "historico": []
   },
   {
-    "id": "157c419b-5cbd-4dd3-b3d6-0f5ee076e57d",
+    "id": "30897e88-1ae7-4ed8-aeaf-be5baeaddc0a",
     "clienteId": "cliente-123",
-    "numero": "0001234-56.2025.8.26.0000",
-    "tipo": "cível",
-    "status": "em andamento",
-    "historico": []
-  },
-  {
-    "id": "d90f183d-f364-4aa8-be28-656f12e250f7",
-    "clienteId": "cliente-123",
-    "numero": "0001234-56.2025.8.26.0000",
-    "tipo": "cível",
-    "status": "em andamento",
+    "numero": "2025.000123-4",
+    "tipo": "Cível",
+    "status": "Em andamento",
     "historico": []
   }
 ]
